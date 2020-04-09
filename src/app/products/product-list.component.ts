@@ -11,6 +11,7 @@ import {NgModel} from '@angular/forms';
 export class ProductListComponent implements OnInit, AfterViewInit {
     pageTitle = 'Product List';
     @ViewChild('filterElement') filterElementRef;
+    @ViewChild(NgModel) filterInput: NgModel;
     // @ViewChildren('filterElement, nameElement') inputElementsRef: QueryList<ElementRef>;
     // @ViewChildren(NgModel) inputElementsRef: QueryList<NgModel>;
     listFilter: string;
@@ -28,8 +29,12 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        // console.log(this.inputElementsRef);
-        this.filterElementRef.nativeElement.focus();
+        console.log(this.filterInput);
+        // this.filterElementRef.nativeElement.focus();
+        this.filterInput.valueChanges.subscribe((val) => {
+            console.log(`filterInput: ${val}`);
+            this.performFilter(val);
+        });
     }
 
     ngOnInit(): void {
