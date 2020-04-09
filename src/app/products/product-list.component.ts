@@ -9,7 +9,7 @@ import { ProductService } from './product.service';
 })
 export class ProductListComponent implements OnInit {
     pageTitle = 'Product List';
-    @Input() listFilter: string;
+    listFilter: string;
     showImage: boolean;
 
     imageWidth = 50;
