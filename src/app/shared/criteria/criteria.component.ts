@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 
 @Component({
   selector: 'pm-criteria',
@@ -6,12 +6,21 @@ import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewC
   styleUrls: ['./criteria.component.css']
 })
 export class CriteriaComponent implements OnInit, AfterViewInit, OnChanges {
-  listFilter: string;
   @Input() displayDetail: boolean;
   @Input() hitCount: number;
+  @Output() valueChange: EventEmitter<string> = new EventEmitter<string>();
   hitMessage: string;
-
   @ViewChild('filterElement') filterElementRef;
+
+  private _listFilter: string;
+  get listFilter(): string {
+    return this._listFilter;
+  }
+
+  set listFilter(value: string) {
+    this._listFilter = value;
+    this.valueChange.emit(value);
+  }
 
   constructor() { }
 
