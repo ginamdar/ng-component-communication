@@ -1,8 +1,8 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 
 import { IProduct } from './product';
 import { ProductService } from './product.service';
-import {NgModel} from '@angular/forms';
+import {CriteriaComponent} from '../shared/criteria/criteria.component';
 
 @Component({
     templateUrl: './product-list.component.html',
@@ -10,13 +10,12 @@ import {NgModel} from '@angular/forms';
 })
 export class ProductListComponent implements OnInit, AfterViewInit {
     pageTitle = 'Product List';
-    @ViewChild('filterElement') filterElementRef;
-    @ViewChild(NgModel) filterInput: NgModel;
     // @ViewChildren('filterElement, nameElement') inputElementsRef: QueryList<ElementRef>;
     // @ViewChildren(NgModel) inputElementsRef: QueryList<NgModel>;
-    listFilter: string;
-    filterName: string;
+    @ViewChild('filterCriteria') filterComponent: CriteriaComponent;
+    parentListFilter: string;
     showImage: boolean;
+    showFilter = true;
 
     imageWidth = 50;
     imageMargin = 2;
@@ -28,20 +27,11 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     constructor(private productService: ProductService) {
     }
 
-    ngAfterViewInit(): void {
-        console.log(this.filterInput);
-        // this.filterElementRef.nativeElement.focus();
-        this.filterInput.valueChanges.subscribe((val) => {
-            console.log(`filterInput: ${val}`);
-            this.performFilter(val);
-        });
-    }
-
     ngOnInit(): void {
         this.productService.getProducts().subscribe(
             (products: IProduct[]) => {
                 this.products = products;
-                this.performFilter(this.listFilter);
+                this.performFilter(this.parentListFilter);
             },
             (error: any) => this.errorMessage = error as any
         );
@@ -60,8 +50,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
         }
     }
 
-    onFilterChange(filter: string) {
-        this.listFilter = filter;
-        this.performFilter(this.listFilter);
+    ngAfterViewInit(): void {
+        this.parentListFilter = this.filterComponent.listFilter;
     }
 }
