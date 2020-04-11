@@ -1,19 +1,21 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import { IProduct } from './product';
 import { ProductService } from './product.service';
 import {CriteriaComponent} from '../shared/criteria/criteria.component';
 import {ProductParameterService} from './product-parameter.service';
+import {Subscription} from 'rxjs/internal/Subscription';
 
 @Component({
     templateUrl: './product-list.component.html',
     styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
     pageTitle = 'Product List';
     // @ViewChildren('filterElement, nameElement') inputElementsRef: QueryList<ElementRef>;
     // @ViewChildren(NgModel) inputElementsRef: QueryList<NgModel>;
     @ViewChild('filterCriteria') filterComponent: CriteriaComponent;
+    private productsSubscriber: Subscription;
     showFilter = true;
 
     imageWidth = 50;
@@ -35,10 +37,15 @@ export class ProductListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.productService.getProducts().subscribe(
+        this.productsSubscriber = this.productService.getProducts().subscribe(
             (products: IProduct[]) => {
                 this.products = products;
-                this.filterComponent.listFilter = this.productParameterService.filterBy;
+                if (this.filterComponent) {
+                    this.filterComponent.listFilter = this.productParameterService.filterBy;
+                    this.performFilter(this.filterComponent.listFilter);
+                } else {
+                    this.performFilter();
+                }
             },
             (error: any) => this.errorMessage = error as any
         );
@@ -60,5 +67,9 @@ export class ProductListComponent implements OnInit {
     onValueChange(value: string): void {
         this.productParameterService.filterBy = value;
         this.performFilter(value);
+    }
+
+    ngOnDestroy(): void {
+        this.productsSubscriber?.unsubscribe();
     }
 }

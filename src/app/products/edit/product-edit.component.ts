@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 
@@ -10,15 +10,11 @@ import { ProductService } from '../product.service';
     styleUrls: ['./product-edit.component.css']
 })
 export class ProductEditComponent implements OnInit {
-    @ViewChild(NgForm) editForm: NgForm;
-    pageTitle: string = 'Product Edit';
+    @ViewChild('editProduct', { static: false}) editForm: NgForm;
+    pageTitle: string;
     errorMessage: string;
     private originalProduct: IProduct;
     product: IProduct;
-
-    get isDirty(): boolean {
-        return this.editForm.dirty ? true : false;
-    }
 
     constructor(private productService: ProductService,
                 private router: Router,
@@ -38,13 +34,13 @@ export class ProductEditComponent implements OnInit {
         this.productService.getProduct(id)
             .subscribe(
                 product => this.onProductRetrieved(product),
-                error => this.errorMessage = <any>error
+                error => this.errorMessage = error
             );
     }
 
     onProductRetrieved(product: IProduct): void {
         // Reset back to pristine
-        this.editForm.reset();
+        this.editForm?.reset();
 
         // Display the data in the form
         // Use a copy to allow cancel.
@@ -78,8 +74,8 @@ export class ProductEditComponent implements OnInit {
         }
     }
 
-    saveProduct(): void {
-        if (this.editForm.valid) {
+    saveProduct(form: NgForm): void {
+        if (form.valid) {
             this.productService.saveProduct(this.product)
                 .subscribe(() => {
                     // Assign the changes from the copy

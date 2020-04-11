@@ -8,7 +8,7 @@ import { ProductService } from '../product.service';
   templateUrl: './product-shell-list.component.html'
 })
 export class ProductShellListComponent implements OnInit {
-  pageTitle: string = 'Products';
+  pageTitle = 'Products';
   errorMessage: string;
   products: IProduct[];
 
@@ -21,6 +21,11 @@ export class ProductShellListComponent implements OnInit {
       },
       (error: any) => this.errorMessage = <any>error
     );
+  }
+
+
+  onProductSelected(prod: IProduct): void {
+    this.productService.currentProduct = prod;
   }
 
 }

@@ -7,7 +7,11 @@ import { IProduct } from '../product';
     templateUrl: './product-shell-detail.component.html'
 })
 export class ProductShellDetailComponent implements OnInit {
-    pageTitle: string = 'Product Detail';
+    pageTitle = 'Product Detail';
+
+    get product(): IProduct | null {
+        return this.productService.currentProduct;
+    }
 
     constructor(private productService: ProductService) { }
 
