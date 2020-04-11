@@ -5,14 +5,21 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { IProduct } from './product';
+import {Subject} from 'rxjs/internal/Subject';
 
 @Injectable()
 export class ProductService {
     private productsUrl = 'api/products';
     private products: IProduct[];
-    currentProduct: IProduct | null;
+    private selectedProductSource = new Subject<IProduct | null>();
+    selectedProductChanges$ = this.selectedProductSource.asObservable();
 
     constructor(private http: HttpClient) { }
+
+
+    changeSelectedProduct(selectedProduct: IProduct | null): void {
+        this.selectedProductSource.next(selectedProduct);
+    }
 
     getProducts(): Observable<IProduct[]> {
         if (this.products) {
@@ -66,8 +73,8 @@ export class ProductService {
                                 const foundIndex = this.products.findIndex(aProduct => aProduct.id === id);
                                 if (foundIndex > -1) {
                                     this.products.splice(foundIndex, 1);
-                                    this.currentProduct = null;
                                 }
+                                this.changeSelectedProduct(null);
                             }),
                             catchError(this.handleError)
                         );
@@ -80,7 +87,7 @@ export class ProductService {
                             tap(data => console.log('createProduct: ' + JSON.stringify(data))),
                             tap(data => {
                                 this.products.push(data);
-                                this.currentProduct = data;
+                                this.changeSelectedProduct(data);
                             }),
                             catchError(this.handleError)
                         );
